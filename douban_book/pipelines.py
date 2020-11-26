@@ -9,6 +9,10 @@ from itemadapter import ItemAdapter
 import pymysql
 from douban_book.items import DoubanBookItem, DoubanBookReview
 from uuid import uuid1
+from scrapy import Request
+from scrapy.exceptions import DropItem
+from scrapy.pipelines.images import ImagesPipeline
+from pymysql.err import DataError
 
 
 class MysqlPipeline:
@@ -36,31 +40,38 @@ class MysqlPipeline:
         pass
 
     def close_spider(self, spider):
+        self.db.ping(reconnect=True)
         self.db.close()
 
     def process_item(self, item, spider):
+        book_id = uuid1().hex
         if isinstance(item, DoubanBookItem):
-            print('book: ', item['title'])
+            print('book: ', item.get('title'), item.get('url'))
             data = dict(item)
             douban_recommends = data.pop('douban_recommends')
             comments = data.pop('comments')
-            # 存入books表中
-            data['id'] = uuid1().hex
+            # 存入books表中主键id
+            data['id'] = book_id
             self._store_dict_to_table(data, 'books')
             # 存入comments表中
             for comment in comments:
                 comment_dict = {
                     'id': uuid1().hex,
+                    'book_id': book_id,
                     'comment': comment.strip(),
                     'url': item['url'],
                     'title': item['title'],
                     'type': 'short',
                 }
-                self._store_dict_to_table(comment_dict, 'comments')
+                try:
+                    self._store_dict_to_table(comment_dict, 'comments')
+                except:
+                    continue
             # 存入douban_recommend表
             for book, url in douban_recommends:
                 recommend_dict = {
                     'id': uuid1().hex,
+                    'book_id': book_id,
                     'url': item['url'],
                     'title': item['title'],
                     'recommend_book': book,
@@ -72,6 +83,7 @@ class MysqlPipeline:
             print('comments: ', item['title'])
             data = {
                 'id': uuid1().hex,
+                'book_id': book_id,
                 'url': item['url'],
                 'title': item['title'],
                 'type': 'long',
@@ -86,8 +98,38 @@ class MysqlPipeline:
         :param data: 字典数据
         :param table: 表名称
         """
+        url = data['url']
         keys = ', '.join(data.keys())
         values = ', '.join(['%s'] * len(data))
-        sql = f'insert into {table} ({keys}) values ({values})'
-        self.cursor.execute(sql, tuple(data.values()))
-        self.db.commit()
+        sql =f'insert into {table} ({keys}) values ({values})'
+        # 防止断开
+        self.db.ping(reconnect=True)
+        try:
+            self.cursor.execute(sql, tuple(data.values()))
+        except DataError as e:
+            error = str(e)
+            if 'directory' in error:
+                del data['directory']
+            elif 'content_intro' in error:
+                del data['content_intro']
+            self._store_dict_to_table(data, table)
+        else:
+            self.db.commit()
+
+
+class ImagePipeline(ImagesPipeline):
+    def file_path(self, request, response=None, info=None, *, item=None):
+        url = request.url
+        file_name = url.split('/')[-1]
+        return file_name
+
+    def item_completed(self, results, item, info):
+        if isinstance(item, DoubanBookItem):
+            image_paths = [x['path'] for ok, x in results if ok]
+            # if not image_paths:
+            #     raise DropItem('Image Downloaded Failed')
+            return item
+
+    def get_media_requests(self, item, info):
+        if isinstance(item, DoubanBookItem):
+            yield Request(item['image'])

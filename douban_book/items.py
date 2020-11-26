@@ -10,7 +10,6 @@ class DoubanBookItem(scrapy.Item):
     table = 'books'
     url = scrapy.Field()
     title = scrapy.Field()
-
     subtitle = scrapy.Field()
     author = scrapy.Field()
     publishing_year = scrapy.Field()
@@ -18,11 +17,9 @@ class DoubanBookItem(scrapy.Item):
     page_number = scrapy.Field()
     price = scrapy.Field()
     isbn = scrapy.Field()
-
     rating = scrapy.Field()
     vote_number = scrapy.Field()
     image = scrapy.Field()
-
     content_intro = scrapy.Field(comment='内容简介')
     author_intro = scrapy.Field()
     directory = scrapy.Field()
@@ -35,7 +32,6 @@ class DoubanBookItem(scrapy.Item):
 
 class DoubanBookReview(scrapy.Item):
     table = 'comments'
-
     title = scrapy.Field()
     url = scrapy.Field()
     review = scrapy.Field()

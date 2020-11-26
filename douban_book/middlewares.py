@@ -4,53 +4,22 @@
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
-from fake_useragent import UserAgent
-import base64
-import random
-
+import scrapy
 # useful for handling different item types with a single interface
 from itemadapter import is_item, ItemAdapter
 
 
-class AbuyunProxyMiddleware(object):
-    proxyServer = ""
-    proxyUser = ""
-    proxyPass = ""
-    encoded_user_pass = proxyUser + ":" + proxyPass
-    proxyAuth = 'Basic' + base64.urlsafe_b64encode(encoded_user_pass.encode()).decode()
+# 代理服务器
+proxyServer = "transfer.moguproxy.com:9001"
+appkey = 'QUw3ZVZ1anRidjd1cm5nVjpvMkZudklMQkl0MExRaE1r'
+# appkey为你订单的key
+proxyAuth = "Basic " + appkey
 
+
+class ProxyMiddleware(object):
     def process_request(self, request, spider):
-        request.meta['proxy'] = self.proxyServer
-        request.headers['Proxy-Authorization'] = self.proxyAuth
-        return None
-
-
-class CookieMiddleware():
-    def process_request(self, request, spider):
-        cookies = {
-            'll': '118282',
-            'bid': 'L010R6yyi8w',
-            'gr_user_id': '03cce2dc-e927-40c3-b2c7-3fc248abfcaa',
-            '__yadk_uid': '1aNqBAtqGXDn2KEdNtqlHFnbKTG8hNuX',
-            '_vwo_uuid_v2': 'D793FAC9C56B44E1AE5F33F751BA726EC|a196d126463d7740bd898895127d6fef',
-            'douban-fav-remind': '1',
-            '__utmc': '30149280',
-            'Hm_lvt_cfafef0aa0076ffb1a7838fd772f844d': '1605604815',
-            'Hm_lpvt_cfafef0aa0076ffb1a7838fd772f844d': '1605604815',
-            '_ga': 'GA1.2.171069040.1604371207',
-            '_gid': 'GA1.2.1044574779.1605610240',
-            '__utmz': '30149280.1605616497.27.16.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided)',
-            '__gads': 'ID=a0f79d81392a0297-220298e5ecc400fd:T=1605670025:RT=1605670025:S=ALNI_MYdGaZXhQmpFfsd4ZmaeoS0h7egmw',
-            'viewed': '34876209_35188551_35230260_35217846_34834201_34995553_1002299_3910853_25891307_6533645',
-            'ct': 'y',
-            '_pk_ref.100001.3ac3': '%5B%22%22%2C%22%22%2C1605678920%2C%22https%3A%2F%2Fwww.google.com%2F%22%5D',
-            'ap_v': '0,6.0',
-            '__utma': '30149280.171069040.1604371207.1605670025.1605678924.30',
-            '_pk_id.100001.3ac3': '2406857cae7303bc.1604371247.29.1605679634.1605671324.',
-            '__utmb': '30149280.3.10.1605678924',
-        }
-        cookies['__utmb'] = '30149280.{}.10.1603168583'.format(random.choice([i for i in range(1, 10)]))
-        return None
+        request.meta["proxy"] = proxyServer
+        request.headers["Authorization"] = proxyAuth
 
 
 class DoubanBookSpiderMiddleware:
@@ -122,13 +91,16 @@ class DoubanBookDownloaderMiddleware:
         # - or return a Request object
         # - or raise IgnoreRequest: process_exception() methods of
         #   installed downloader middleware will be called
-        ua = UserAgent()
-        request.headers['User-Agent'] = ua.random
         return None
 
     def process_response(self, request, response, spider):
         # Called with the response returned from the downloader.
-
+        try:
+            if 'navigator.platform' in response.text:
+                print("Your IP is restricted.", response.url)
+                return request
+        except:
+            return response
         # Must either;
         # - return a Response object
         # - return a Request object

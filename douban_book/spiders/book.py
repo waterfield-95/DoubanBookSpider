@@ -1,12 +1,9 @@
 import scrapy
-from scrapy.cmdline import execute
 from copy import deepcopy
 import re
 import json
 from douban_book.items import DoubanBookItem, DoubanBookReview
-import logging
 
-logger = logging.getLogger(__name__)
 
 class BookSpider(scrapy.Spider):
     name = 'book'
@@ -15,7 +12,6 @@ class BookSpider(scrapy.Spider):
 
     def parse(self, response, **kwargs):
         category_list = response.xpath("//div[@class='article']//tbody//td/a/text()").extract()
-        base_url = 'https://book.douban.com/tag/{}?start={}'
         # 遍历所有分类，每个分类下有1000条数据可爬取
         for category in category_list:
             for start in range(0, 1000, 20):
@@ -33,10 +29,14 @@ class BookSpider(scrapy.Spider):
         schema = response.xpath("//script[@type='application/ld+json']/text()").extract_first()
         if schema is not None:
             d = eval(schema)
-            item['title'] = d['name']
-            item['author'] = d['author'][0].get('name')
-            item['isbn'] = d['isbn']
-
+            item['title'] = d.get('name')
+            item['isbn'] = d.get('isbn')
+            try:
+                author = d['author'][0].get('name')
+            except IndexError:
+                pass
+            else:
+                item['author'] = author
         info = response.xpath("//div[@id='info']").extract_first()
         info_map = {
             '副标题': 'subtitle',
@@ -46,7 +46,10 @@ class BookSpider(scrapy.Spider):
             '定价': 'price',
         }
         for name, item_name in info_map.items():
-            temp = re.search(rf'{name}:</span>(.*?)<br>', info)
+            try:
+                temp = re.search(rf'{name}:</span>(.*?)<br>', info)
+            except:
+                continue
             if temp is not None:
                 item[item_name] = temp.group(1).strip()
 
@@ -74,17 +77,23 @@ class BookSpider(scrapy.Spider):
         item["tags"] = ' '.join(tags)
         # 短评和评论
         item['comments'] = response.xpath("//*[@id='new_score']/ul/li//span[@class='short']/text()").extract()
-        # logger.warning(item)
         yield item
 
         m = {
             'url': response.url,
-            'title': item['title'],
+            'title': item.get('title'),
         }
         cid_list = response.xpath('//div[@class="review-list  "]/div/@data-cid').extract()
+        headers_review = {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Sec-Fetch-Site': 'same-origin',
+            'Sec-Fetch-Mode': 'cors',
+            'Sec-Fetch-Dest': 'empty',
+        }
         for cid in cid_list:
             url = f'https://book.douban.com/j/review/{cid}/full'
             yield scrapy.Request(url=url, callback=self.parse_review_page,
+                                 headers=headers_review,
                                  meta={'data': deepcopy(m)})
 
     def parse_review_page(self, response):
@@ -98,5 +107,6 @@ class BookSpider(scrapy.Spider):
 
 
 if __name__ == '__main__':
+    from scrapy.cmdline import execute
     # cmd: scrapy crawl book
     execute(['scrapy', 'crawl', 'book'])
