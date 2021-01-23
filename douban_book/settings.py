@@ -1,19 +1,26 @@
-# Scrapy settings for douban_book project
-#
-# For simplicity, this file contains only settings considered important or
-# commonly used. You can find more settings consulting the documentation:
-#
-#     https://docs.scrapy.org/en/latest/topics/settings.html
-#     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+
+REDIS_URL = 'redis://:xlib@172.16.0.138:6379/15'
+MYSQL_DATABASE = 'collie'
+CONCURRENT_REQUESTS = 100
+DOWNLOAD_DELAY = 0
+# CONCURRENT_REQUESTS_PER_IP = 16
 
 # DataLoss
-DOWNLOAD_FAIL_ON_DATALOSS = False
+# DOWNLOAD_FAIL_ON_DATALOSS = False
 
 BOT_NAME = 'douban_book'
 
 SPIDER_MODULES = ['douban_book.spiders']
 NEWSPIDER_MODULE = 'douban_book.spiders'
+
+# DFS
+DEPTH_PRIORITY = 1
+SCHEDULER_DISK_QUEUE = 'scrapy.squeues.PickleFifoDiskQueue'
+SCHEDULER_MEMORY_QUEUE = 'scrapy.squeues.FifoMemoryQueue'
+
+# unlimited Depth
+DEPTH_LIMIT = 0
+DEPTH_STATS_VERBOSE = True
 
 # 启动Scrapy-Redis去重过滤器，取消Scrapy的去重功能
 DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
@@ -21,32 +28,31 @@ DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
 SCHEDULER = "scrapy_redis.scheduler.Scheduler"
 # Scrapy-Redis断点续爬
 SCHEDULER_PERSIST = True
-# 配置Redis数据库的连接，密码默认为空 redis://[:password]@host:port/db
-REDIS_URL = 'redis://172.16.0.132:6379/0'
+# 配置Redis数据库的连接，密码默认为空 redis://user:password@host:port/db
+
 # 清洗记录的爬取队列和指纹集合，重爬
 # SCHEDULER_FLUSH_ON_START = True
 
 # Mysql
-MYSQL_HOST = '172.16.0.132'
-# MYSQL_DATABASE = 'collie_alpha'
-MYSQL_DATABASE = 'collie_beta'
+MYSQL_HOST = '172.16.0.138'
+# MYSQL_DATABASE = 'collie_test'
 MYSQL_PORT = 3306
 MYSQL_USER = 'x-lib'
 MYSQL_PASSWORD = 'xlib'
 
 # Logging
-LOG_LEVEL = "WARNING"
-# LOG_LEVEL = "DEBUG"
+LOG_LEVEL = "DEBUG"
+# LOG_LEVEL = "INFO"
 from datetime import datetime
 n = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 LOG_FILE = f"./log/{n}_error.log"
 
-# 异常处理 429->too many requests abuyun代理：每秒5条
-RETRY_TIMES = 10
+RETRY_TIMES = 3
 RETRY_HTTP_CODES = [500, 502, 503, 504, 522, 524, 407, 408, 429, 520]
+HTTPERROR_ALLOWED_CODES = [301, 302, 403]
 
 # 图像存储
-IMAGES_STORE = './images'
+# IMAGES_STORE = './images'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'douban_book (+http://www.yourdomain.com)'
@@ -55,7 +61,6 @@ IMAGES_STORE = './images'
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-# CONCURRENT_REQUESTS = 32
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
@@ -63,7 +68,7 @@ ROBOTSTXT_OBEY = False
 # DOWNLOAD_DELAY = 0.1
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
-# CONCURRENT_REQUESTS_PER_IP = 16
+
 
 # Disable cookies (enabled by default)
 COOKIES_ENABLED = False
@@ -73,18 +78,18 @@ COOKIES_ENABLED = False
 
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-#SPIDER_MIDDLEWARES = {
-#    'douban_book.middlewares.DoubanBookSpiderMiddleware': 543,
-#}
+SPIDER_MIDDLEWARES = {
+   'douban_book.middlewares.DoubanBookSpiderMiddleware': 543,
+}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
         'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-        'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
-        # 'douban_book.middlewares.CookieMiddleware': 401,
-        'douban_book.middlewares.ProxyMiddleware': 402,
-        'douban_book.middlewares.DoubanBookDownloaderMiddleware': 543,
+        'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 100,
+        'douban_book.middlewares.ProxyDownloaderMiddleware': 101,
+        'douban_book.middlewares.DoubanBookDownloaderMiddleware': 544,
+        'scrapy.spidermiddlewares.depth.DepthMiddleware': 900,  # default已经设置
 }
 
 # Enable or disable extensions
@@ -96,8 +101,9 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'douban_book.pipelines.MysqlPipeline': 300,
-    'douban_book.pipelines.ImagePipeline': 301,
+    # 'douban_book.pipelines.MysqlPipeline': 300,
+    # 'douban_book.pipelines.ImagePipeline': 301,
+    'douban_book.pipelines.DoubanPipeline': 302,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

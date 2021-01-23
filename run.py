@@ -5,6 +5,4 @@ import os
 if __name__ == '__main__':
     if not os.path.exists('log'):
         os.mkdir('log/')
-    if not os.path.exists('images'):
-        os.mkdir('images/')
-    execute(['scrapy', 'crawl', 'book'])
+    execute(['scrapy', 'crawl', 'book_comment'])

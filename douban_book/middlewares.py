@@ -2,22 +2,31 @@
 #
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-
-from scrapy import signals
-import scrapy
 # useful for handling different item types with a single interface
 from itemadapter import is_item, ItemAdapter
 
+from scrapy import signals
+from w3lib.http import basic_auth_header
+from scrapy.http import Request
+import logging
 
-# 代理服务器
-proxyServer = "transfer.moguproxy.com:9001"
-appkey = 'QUw3ZVZ1anRidjd1cm5nVjpvMkZudklMQkl0MExRaE1r'
-# appkey为你订单的key
-proxyAuth = "Basic " + appkey
+logger = logging.getLogger(__name__)
 
 
-class ProxyMiddleware(object):
+class ProxyDownloaderMiddleware:
     def process_request(self, request, spider):
+        proxy = "tps137.kdlapi.com:15818"
+        request.meta['proxy'] = "http://%(proxy)s" % {'proxy': proxy}
+        # 用户名密码认证
+        request.headers['Proxy-Authorization'] = basic_auth_header('t11120873803975', 'n3s831fx')  # 白名单认证可注释此行
+
+
+class MRProxyMiddleware(object):
+    # 蘑菇代理服务器
+    def process_request(self, request, spider):
+        proxyServer = "transfer.moguproxy.com:9001"
+        appkey = 'QUw3ZVZ1anRidjd1cm5nVjpvMkZudklMQkl0MExRaE1r'
+        proxyAuth = "Basic " + appkey
         request.meta["proxy"] = proxyServer
         request.headers["Authorization"] = proxyAuth
 
@@ -50,6 +59,7 @@ class DoubanBookSpiderMiddleware:
             yield i
 
     def process_spider_exception(self, response, exception, spider):
+        print(f'#return exception reason: {type(exception)}')
         # Called when a spider or process_spider_input() method
         # (from other spider middleware) raises an exception.
 
@@ -95,12 +105,6 @@ class DoubanBookDownloaderMiddleware:
 
     def process_response(self, request, response, spider):
         # Called with the response returned from the downloader.
-        try:
-            if 'navigator.platform' in response.text:
-                print("Your IP is restricted.", response.url)
-                return request
-        except:
-            return response
         # Must either;
         # - return a Response object
         # - return a Request object
@@ -120,5 +124,51 @@ class DoubanBookDownloaderMiddleware:
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
 
+
+class DepthMiddleware(object):
+
+    def __init__(self, maxdepth, stats=None, verbose_stats=False, prio=1):
+        self.maxdepth = maxdepth
+        self.stats = stats
+        self.verbose_stats = verbose_stats
+        self.prio = prio
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        settings = crawler.settings
+        maxdepth = settings.getint('DEPTH_LIMIT')
+        verbose = settings.getbool('DEPTH_STATS_VERBOSE')
+        prio = settings.getint('DEPTH_PRIORITY')
+        return cls(maxdepth, crawler.stats, verbose, prio)
+
+    def process_spider_output(self, response, result, spider):
+        def _filter(request):
+            if isinstance(request, Request):
+                depth = response.meta['depth'] + 1
+                request.meta['depth'] = depth
+                if self.prio:
+                    request.priority -= depth * self.prio
+                if self.maxdepth and depth > self.maxdepth:
+                    logger.debug(
+                        "Ignoring link (depth > %(maxdepth)d): %(requrl)s ",
+                        {'maxdepth': self.maxdepth, 'requrl': request.url},
+                        extra={'spider': spider}
+                    )
+                    return False
+                elif self.stats:
+                    if self.verbose_stats:
+                        self.stats.inc_value('request_depth_count/%s' % depth,
+                                             spider=spider)
+                    self.stats.max_value('request_depth_max', depth,
+                                         spider=spider)
+            return True
+
+        # base case (depth=0)
+        if self.stats and 'depth' not in response.meta:
+            response.meta['depth'] = 0
+            if self.verbose_stats:
+                self.stats.inc_value('request_depth_count/0', spider=spider)
+
+        return (r for r in result or () if _filter(r))
 
 

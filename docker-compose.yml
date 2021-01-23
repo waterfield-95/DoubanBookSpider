@@ -1,0 +1,36 @@
+version: "3"
+services:
+  spider_1:
+    image: comment_spider
+    container_name: spider_1
+    command: scrapy crawl book_comment
+    volumes:
+      - .:/usr/src/spider/
+
+  spider_2:
+    image: comment_spider
+    container_name: spider_2
+    command: scrapy crawl book_comment
+    volumes:
+      - .:/usr/src/spider/
+
+  spider_3:
+    image: comment_spider
+    container_name: spider_3
+    command: scrapy crawl book_comment
+    volumes:
+      - .:/usr/src/spider/
+
+  spider_4:
+    image: comment_spider
+    container_name: spider_4
+    command: scrapy crawl book_comment
+    volumes:
+      - .:/usr/src/spider/
+
+  spider_5:
+    image: comment_spider
+    container_name: spider_5
+    command: scrapy crawl book_comment
+    volumes:
+      - .:/usr/src/spider/

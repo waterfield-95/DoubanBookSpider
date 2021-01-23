@@ -1,18 +1,11 @@
-# Define your item pipelines here
-#
-# Don't forget to add your pipeline to the ITEM_PIPELINES setting
-# See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-
-
-# useful for handling different item types with a single interface
-from itemadapter import ItemAdapter
 import pymysql
-from douban_book.items import DoubanBookItem, DoubanBookReview
+from douban_book.items import DoubanBookItem, DoubanBookReview, BookComment
 from uuid import uuid1
 from scrapy import Request
 from scrapy.exceptions import DropItem
 from scrapy.pipelines.images import ImagesPipeline
 from pymysql.err import DataError
+import douban_book.database as db
 
 
 class MysqlPipeline:
@@ -131,5 +124,63 @@ class ImagePipeline(ImagesPipeline):
             return item
 
     def get_media_requests(self, item, info):
-        if isinstance(item, DoubanBookItem):
+        if isinstance(item, DoubanBookItem) and item.get('image') is not None:
             yield Request(item['image'])
+
+
+class DoubanPipeline:
+    def __init__(self):
+        self.cursor = db.connection.cursor()
+
+    def db_reconnect(self):
+        db.connection.ping(reconnect=True)
+        self.cursor = db.connection.cursor()
+
+    def close_spider(self, spider):
+        self.cursor.close()
+
+    def get_book_id(self, item):
+        sql = f'SELECT id FROM books WHERE url="https://book.douban.com/subject/{item["douban_id"]}/"'
+        self.cursor.execute(sql)
+        return self.cursor.fetchone()[0]
+
+    def get_comment(self, item):
+        sql = f'SELECT * FROM  comments WHERE douban_comment_id={item["douban_comment_id"]}'
+        self.cursor.execute(sql)
+        return self.cursor.fetchone()
+
+    def save_comment(self, item):
+        keys = item.keys()
+        values = tuple(item.values())
+        fields = ','.join(keys)
+        temp = ','.join(['%s'] * len(keys))
+        sql = 'INSERT INTO comments (%s) VALUES (%s)' % (fields, temp)
+        self.cursor.execute(sql, values)
+        return db.connection.commit()
+
+    def update_comment(self, item):
+        douban_comment_id = item.pop('douban_comment_id')
+        keys = item.keys()
+        values = tuple(item.values())
+        fields = [f'{i}=%s' for i in keys]
+        sql = 'UPDATE comments SET %s WHERE douban_comment_id=%s' % (','.join(fields), douban_comment_id)
+        self.cursor.execute(sql, tuple(i.strip() for i in values))
+        return db.connection.commit()
+
+    def process_item(self, item, spider):
+        if isinstance(item, BookComment):
+            """
+            book_comment
+            """
+            self.db_reconnect()
+            exist = self.get_comment(item)
+            if not exist:
+                try:
+                    item['id'] = uuid1().hex
+                    item['book_id'] = self.get_book_id(item)
+                    self.save_comment(item)
+                except Exception as e:
+                    print(item)
+                    print(e)
+            # else:
+            #     self.update_comment(item)

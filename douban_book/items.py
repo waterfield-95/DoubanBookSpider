@@ -4,6 +4,7 @@
 # https://docs.scrapy.org/en/latest/topics/items.html
 
 import scrapy
+from scrapy import Item, Field
 
 
 class DoubanBookItem(scrapy.Item):
@@ -37,3 +38,15 @@ class DoubanBookReview(scrapy.Item):
     review = scrapy.Field()
 
 
+class BookComment(Item):
+    id = Field()
+    book_id = Field()
+    douban_id = Field()
+    douban_comment_id = Field()
+    douban_user_nickname = Field()
+    douban_user_avatar = Field()
+    douban_user_url = Field()
+    content = Field()
+    votes = Field()
+    rating = Field()
+    comment_time = Field()

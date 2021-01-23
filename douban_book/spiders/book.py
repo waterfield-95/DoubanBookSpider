@@ -21,9 +21,18 @@ class BookSpider(scrapy.Spider):
     def parse_tag_page(self, response):
         book_urls = response.xpath('//*[@id="subject_list"]/ul/li/div[2]/h2/a/@href').extract()
         for url in book_urls:
+            # from redis import StrictRedis
+            # rconn = StrictRedis(host='172.16.0.132', port=6379, db=0, decode_responses=True)
+            # if rconn.sismember('collie_beta_1127', url):
+            #     print("已爬取，跳过")
             yield scrapy.Request(url=url, callback=self.parse_detail_page)
 
     def parse_detail_page(self, response):
+        # 处理蘑菇代理的ip异常
+        if 'navigator.platform' in response.text:
+            print("Your IP is restricted.", response.url)
+            yield scrapy.Request(url=response.url, callback=self.parse_detail_page, dont_filter=True)
+            return
         item = DoubanBookItem()
         item['url'] = response.url
         schema = response.xpath("//script[@type='application/ld+json']/text()").extract_first()
@@ -101,7 +110,8 @@ class BookSpider(scrapy.Spider):
         data = response.meta["data"]
         review_item['url'] = data['url']
         review_item['title'] = data['title']
-        review = re.sub(r'<.*?>', ' ', json.loads(response.text)['html'])
+        html = json.loads(response.text).get("html")
+        review = re.sub(r'<.*?>', ' ', html)
         review_item['review'] = re.sub(r"--&gt;|\u3000|\n|\t|&nbsp;|&amp;|&quot;", " ", review).strip()
         yield review_item
 
