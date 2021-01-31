@@ -1,0 +1,50 @@
+2021-01-26 15:17:46 [scrapy.utils.log] INFO: Scrapy 2.4.0 started (bot: douban_book)
+2021-01-26 15:17:46 [scrapy.utils.log] INFO: Versions: lxml 4.6.1.0, libxml2 2.9.10, cssselect 1.1.0, parsel 1.6.0, w3lib 1.22.0, Twisted 20.3.0, Python 3.7.9 (default, Aug 31 2020, 07:22:35) - [Clang 10.0.0 ], pyOpenSSL 19.1.0 (OpenSSL 1.1.1h  22 Sep 2020), cryptography 3.2.1, Platform Darwin-20.2.0-x86_64-i386-64bit
+2021-01-26 15:17:46 [scrapy.utils.log] DEBUG: Using reactor: twisted.internet.selectreactor.SelectReactor
+2021-01-26 15:17:46 [scrapy.crawler] INFO: Overridden settings:
+{'BOT_NAME': 'douban_book',
+ 'CONCURRENT_REQUESTS': 100,
+ 'COOKIES_ENABLED': False,
+ 'DEPTH_PRIORITY': 1,
+ 'DEPTH_STATS_VERBOSE': True,
+ 'DOWNLOAD_TIMEOUT': 15,
+ 'DUPEFILTER_CLASS': 'scrapy_redis.dupefilter.RFPDupeFilter',
+ 'LOG_FILE': './logs/2021_01_26_15_17_45_error.log',
+ 'NEWSPIDER_MODULE': 'douban_book.spiders',
+ 'REACTOR_THREADPOOL_MAXSIZE': 20,
+ 'REDIRECT_ENABLED': False,
+ 'RETRY_HTTP_CODES': [500, 502, 503, 504, 522, 524, 407, 408, 429, 520],
+ 'RETRY_TIMES': 3,
+ 'SCHEDULER': 'scrapy_redis.scheduler.Scheduler',
+ 'SCHEDULER_DISK_QUEUE': 'scrapy.squeues.PickleFifoDiskQueue',
+ 'SCHEDULER_MEMORY_QUEUE': 'scrapy.squeues.FifoMemoryQueue',
+ 'SPIDER_MODULES': ['douban_book.spiders']}
+2021-01-26 15:17:46 [scrapy.extensions.telnet] INFO: Telnet Password: 1338deb07437e63c
+2021-01-26 15:17:46 [scrapy.middleware] INFO: Enabled extensions:
+['scrapy.extensions.corestats.CoreStats',
+ 'scrapy.extensions.telnet.TelnetConsole',
+ 'scrapy.extensions.memusage.MemoryUsage',
+ 'scrapy.extensions.logstats.LogStats']
+2021-01-26 15:17:46 [twisted] CRITICAL: Unhandled error in Deferred:
+2021-01-26 15:17:46 [twisted] CRITICAL: 
+Traceback (most recent call last):
+  File "/Users/yuan/Software/anaconda3/lib/python3.7/site-packages/twisted/internet/defer.py", line 1418, in _inlineCallbacks
+    result = g.send(result)
+  File "/Users/yuan/Software/anaconda3/lib/python3.7/site-packages/scrapy/crawler.py", line 87, in crawl
+    self.engine = self._create_engine()
+  File "/Users/yuan/Software/anaconda3/lib/python3.7/site-packages/scrapy/crawler.py", line 101, in _create_engine
+    return ExecutionEngine(self, lambda _: self.stop())
+  File "/Users/yuan/Software/anaconda3/lib/python3.7/site-packages/scrapy/core/engine.py", line 67, in __init__
+    self.scheduler_cls = load_object(self.settings['SCHEDULER'])
+  File "/Users/yuan/Software/anaconda3/lib/python3.7/site-packages/scrapy/utils/misc.py", line 62, in load_object
+    mod = import_module(module)
+  File "/Users/yuan/Software/anaconda3/lib/python3.7/importlib/__init__.py", line 127, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1006, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 983, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 953, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "<frozen importlib._bootstrap>", line 1006, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 983, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 965, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'scrapy_redis'

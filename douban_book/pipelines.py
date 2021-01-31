@@ -1,8 +1,7 @@
 import pymysql
-from douban_book.items import DoubanBookItem, DoubanBookReview, BookComment
+from douban_book.items import DoubanBookItem, DoubanBookReview, BookComment, BookReview
 from uuid import uuid1
 from scrapy import Request
-from scrapy.exceptions import DropItem
 from scrapy.pipelines.images import ImagesPipeline
 from pymysql.err import DataError
 import douban_book.database as db
@@ -167,7 +166,39 @@ class DoubanPipeline:
         self.cursor.execute(sql, tuple(i.strip() for i in values))
         return db.connection.commit()
 
+    def get_review(self, item):
+        sql = f'SELECT * FROM reviews WHERE douban_review_id={item["douban_review_id"]}'
+        self.cursor.execute(sql)
+        return self.cursor.fetchone()
+
+    def save_review(self, item):
+        if len(item['content']) > 20000:
+            return
+        keys = item.keys()
+        values = tuple(item.values())
+        fields = ','.join(keys)
+        temp = ','.join(['%s'] * len(keys))
+        sql = 'INSERT INTO reviews (%s) VALUES (%s)' % (fields, temp)
+        self.cursor.execute(sql, values)
+        return db.connection.commit()
+
     def process_item(self, item, spider):
+        if isinstance(item, BookReview):
+            """
+            reviews
+            """
+            self.db_reconnect()
+            item['id'] = uuid1().hex
+            item['book_id'] = self.get_book_id(item)
+            exist = self.get_review(item)
+            if not exist:
+                try:
+                    self.save_review(item)
+                    print(f'Stored: {item["douban_review_id"]}')
+                except Exception as e:
+                    print(item)
+                    print("Save data to MySQL: ", e)
+
         if isinstance(item, BookComment):
             """
             book_comment

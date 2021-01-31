@@ -1,0 +1,104 @@
+2021-01-26 15:18:06 [scrapy.utils.log] INFO: Scrapy 2.4.0 started (bot: douban_book)
+2021-01-26 15:18:06 [scrapy.utils.log] INFO: Versions: lxml 4.6.1.0, libxml2 2.9.10, cssselect 1.1.0, parsel 1.6.0, w3lib 1.22.0, Twisted 20.3.0, Python 3.7.9 (default, Aug 31 2020, 07:22:35) - [Clang 10.0.0 ], pyOpenSSL 19.1.0 (OpenSSL 1.1.1h  22 Sep 2020), cryptography 3.2.1, Platform Darwin-20.2.0-x86_64-i386-64bit
+2021-01-26 15:18:06 [scrapy.utils.log] DEBUG: Using reactor: twisted.internet.selectreactor.SelectReactor
+2021-01-26 15:18:06 [scrapy.crawler] INFO: Overridden settings:
+{'BOT_NAME': 'douban_book',
+ 'CONCURRENT_REQUESTS': 100,
+ 'COOKIES_ENABLED': False,
+ 'DEPTH_PRIORITY': 1,
+ 'DEPTH_STATS_VERBOSE': True,
+ 'DOWNLOAD_TIMEOUT': 15,
+ 'DUPEFILTER_CLASS': 'scrapy_redis.dupefilter.RFPDupeFilter',
+ 'LOG_FILE': './logs/2021_01_26_15_18_05_error.log',
+ 'NEWSPIDER_MODULE': 'douban_book.spiders',
+ 'REACTOR_THREADPOOL_MAXSIZE': 20,
+ 'REDIRECT_ENABLED': False,
+ 'RETRY_HTTP_CODES': [500, 502, 503, 504, 522, 524, 407, 408, 429, 520],
+ 'RETRY_TIMES': 3,
+ 'SCHEDULER': 'scrapy_redis.scheduler.Scheduler',
+ 'SCHEDULER_DISK_QUEUE': 'scrapy.squeues.PickleFifoDiskQueue',
+ 'SCHEDULER_MEMORY_QUEUE': 'scrapy.squeues.FifoMemoryQueue',
+ 'SPIDER_MODULES': ['douban_book.spiders']}
+2021-01-26 15:18:06 [scrapy.extensions.telnet] INFO: Telnet Password: 6a0f27e313b13090
+2021-01-26 15:18:06 [scrapy.middleware] INFO: Enabled extensions:
+['scrapy.extensions.corestats.CoreStats',
+ 'scrapy.extensions.telnet.TelnetConsole',
+ 'scrapy.extensions.memusage.MemoryUsage',
+ 'scrapy.extensions.logstats.LogStats']
+2021-01-26 15:18:06 [faker.factory] DEBUG: Not in REPL -> leaving logger event level as is.
+2021-01-26 15:18:19 [scrapy_fake_useragent.middleware] DEBUG: Loaded User-Agent provider: scrapy_fake_useragent.providers.FakeUserAgentProvider
+2021-01-26 15:18:19 [scrapy_fake_useragent.middleware] INFO: Using '<class 'scrapy_fake_useragent.providers.FakeUserAgentProvider'>' as the User-Agent provider
+2021-01-26 15:18:19 [scrapy.middleware] INFO: Enabled downloader middlewares:
+['scrapy_fake_useragent.middleware.RandomUserAgentMiddleware',
+ 'douban_book.middlewares.ProxyDownloaderMiddleware',
+ 'scrapy.downloadermiddlewares.httpauth.HttpAuthMiddleware',
+ 'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware',
+ 'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware',
+ 'douban_book.middlewares.DoubanBookDownloaderMiddleware',
+ 'scrapy.downloadermiddlewares.retry.RetryMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.MetaRefreshMiddleware',
+ 'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware',
+ 'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware',
+ 'scrapy.downloadermiddlewares.stats.DownloaderStats',
+ 'scrapy.spidermiddlewares.depth.DepthMiddleware']
+2021-01-26 15:18:19 [scrapy.middleware] INFO: Enabled spider middlewares:
+['scrapy.spidermiddlewares.httperror.HttpErrorMiddleware',
+ 'scrapy.spidermiddlewares.offsite.OffsiteMiddleware',
+ 'douban_book.middlewares.DoubanBookSpiderMiddleware',
+ 'scrapy.spidermiddlewares.referer.RefererMiddleware',
+ 'scrapy.spidermiddlewares.urllength.UrlLengthMiddleware',
+ 'scrapy.spidermiddlewares.depth.DepthMiddleware']
+2021-01-26 15:18:19 [scrapy.middleware] INFO: Enabled item pipelines:
+['douban_book.pipelines.DoubanPipeline']
+2021-01-26 15:18:19 [scrapy.core.engine] INFO: Spider opened
+2021-01-26 15:18:19 [scrapy.extensions.logstats] INFO: Crawled 0 pages (at 0 pages/min), scraped 0 items (at 0 items/min)
+2021-01-26 15:18:19 [book_review] INFO: Spider opened: book_review
+2021-01-26 15:18:19 [book_review] INFO: Spider opened: book_review
+2021-01-26 15:18:19 [scrapy.extensions.telnet] INFO: Telnet console listening on 127.0.0.1:6024
+2021-01-26 15:18:19 [twisted] CRITICAL: Unhandled Error
+Traceback (most recent call last):
+  File "/Users/yuan/Software/anaconda3/envs/douban_book/lib/python3.7/site-packages/scrapy/commands/parse.py", line 152, in start_parsing
+    self.crawler_process.start()
+  File "/Users/yuan/Software/anaconda3/envs/douban_book/lib/python3.7/site-packages/scrapy/crawler.py", line 327, in start
+    reactor.run(installSignalHandlers=False)  # blocking call
+  File "/Users/yuan/Software/anaconda3/envs/douban_book/lib/python3.7/site-packages/twisted/internet/base.py", line 1283, in run
+    self.mainLoop()
+  File "/Users/yuan/Software/anaconda3/envs/douban_book/lib/python3.7/site-packages/twisted/internet/base.py", line 1292, in mainLoop
+    self.runUntilCurrent()
+--- <exception caught here> ---
+  File "/Users/yuan/Software/anaconda3/envs/douban_book/lib/python3.7/site-packages/twisted/internet/base.py", line 913, in runUntilCurrent
+    call.func(*call.args, **call.kw)
+  File "/Users/yuan/Software/anaconda3/envs/douban_book/lib/python3.7/site-packages/scrapy/utils/reactor.py", line 50, in __call__
+    return self._func(*self._a, **self._kw)
+  File "/Users/yuan/Software/anaconda3/envs/douban_book/lib/python3.7/site-packages/scrapy/core/engine.py", line 137, in _next_request
+    self.crawl(request, spider)
+  File "/Users/yuan/Software/anaconda3/envs/douban_book/lib/python3.7/site-packages/scrapy/core/engine.py", line 218, in crawl
+    self.schedule(request, spider)
+  File "/Users/yuan/Software/anaconda3/envs/douban_book/lib/python3.7/site-packages/scrapy/core/engine.py", line 223, in schedule
+    if not self.slot.scheduler.enqueue_request(request):
+  File "/Users/yuan/Software/anaconda3/envs/douban_book/lib/python3.7/site-packages/scrapy_redis/scheduler.py", line 167, in enqueue_request
+    self.queue.push(request)
+  File "/Users/yuan/Software/anaconda3/envs/douban_book/lib/python3.7/site-packages/scrapy_redis/queue.py", line 99, in push
+    data = self._encode_request(request)
+  File "/Users/yuan/Software/anaconda3/envs/douban_book/lib/python3.7/site-packages/scrapy_redis/queue.py", line 42, in _encode_request
+    obj = request_to_dict(request, self.spider)
+  File "/Users/yuan/Software/anaconda3/envs/douban_book/lib/python3.7/site-packages/scrapy/utils/reqser.py", line 19, in request_to_dict
+    cb = _find_method(spider, cb)
+  File "/Users/yuan/Software/anaconda3/envs/douban_book/lib/python3.7/site-packages/scrapy/utils/reqser.py", line 87, in _find_method
+    raise ValueError(f"Function {func} is not an instance method in: {obj}")
+builtins.ValueError: Function <function Command.prepare_request.<locals>.callback at 0x7fa458dd7ef0> is not an instance method in: <BookCommentSpider 'book_review' at 0x7fa45af57350>
+
+2021-01-26 15:18:24 [scrapy.core.engine] INFO: Closing spider (finished)
+2021-01-26 15:18:24 [scrapy.statscollectors] INFO: Dumping Scrapy stats:
+{'elapsed_time_seconds': 5.009198,
+ 'finish_reason': 'finished',
+ 'finish_time': datetime.datetime(2021, 1, 26, 7, 18, 24, 683337),
+ 'log_count/CRITICAL': 1,
+ 'log_count/DEBUG': 2,
+ 'log_count/INFO': 13,
+ 'memusage/max': 110166016,
+ 'memusage/startup': 110166016,
+ 'scheduler/enqueued/redis': 1,
+ 'start_time': datetime.datetime(2021, 1, 26, 7, 18, 19, 674139)}
+2021-01-26 15:18:24 [scrapy.core.engine] INFO: Spider closed (finished)
+2021-01-26 15:18:24 [scrapy.commands.parse] ERROR: No response downloaded for: https://book.douban.com/review/9702317/

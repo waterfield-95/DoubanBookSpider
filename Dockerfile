@@ -4,4 +4,4 @@ COPY . /usr/src/spider/
 WORKDIR /usr/src/spider/
 
 RUN pip config set global.index-url https://mirrors.cloud.tencent.com/pypi/simple \
-    && pip install -r requirements.txt && mkdir log
+    && pip install -r requirements.txt && mkdir logs

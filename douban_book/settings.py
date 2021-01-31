@@ -1,9 +1,35 @@
+# -*- coding: utf-8 -*-
+"""
+@Time   : 2021/1/21 8:40 PM
+@author : Yuan Tian
+"""
 
-REDIS_URL = 'redis://:xlib@172.16.0.138:6379/15'
+REDIS_URL = 'redis://:xlib@172.16.0.138:6379/13'
 MYSQL_DATABASE = 'collie'
-CONCURRENT_REQUESTS = 100
-DOWNLOAD_DELAY = 0
-# CONCURRENT_REQUESTS_PER_IP = 16
+
+# 16/1 -> 32/0.1
+CONCURRENT_REQUESTS = 32
+DOWNLOAD_DELAY = 0.1
+DOWNLOAD_TIMEOUT = 30
+
+COOKIES_ENABLED = False
+REDIRECT_ENABLED = False
+
+DEFAULT_REQUEST_HEADERS = {
+    'Accept-Encoding': 'gzip',
+    'Connection': 'keep-alive',
+    'Cache-Control': 'max-age=0',
+    'sec-ch-ua': '"Chromium";v="88", "Google Chrome";v="88", ";Not A Brand";v="99"',
+    'sec-ch-ua-mobile': '?0',
+    'Upgrade-Insecure-Requests': '1',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+    'Sec-Fetch-Site': 'same-origin',
+    'Sec-Fetch-Mode': 'navigate',
+    'Sec-Fetch-User': '?1',
+    'Sec-Fetch-Dest': 'document',
+    'Accept-Language': 'en-US,en;q=0.9',
+}
+
 
 # DataLoss
 # DOWNLOAD_FAIL_ON_DATALOSS = False
@@ -28,7 +54,7 @@ DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
 SCHEDULER = "scrapy_redis.scheduler.Scheduler"
 # Scrapy-Redis断点续爬
 SCHEDULER_PERSIST = True
-# 配置Redis数据库的连接，密码默认为空 redis://user:password@host:port/db
+# 配置Redis数据库的连接，密码默认为空 redis://user:password@host:poc rert/db
 
 # 清洗记录的爬取队列和指纹集合，重爬
 # SCHEDULER_FLUSH_ON_START = True
@@ -41,15 +67,15 @@ MYSQL_USER = 'x-lib'
 MYSQL_PASSWORD = 'xlib'
 
 # Logging
-LOG_LEVEL = "DEBUG"
-# LOG_LEVEL = "INFO"
+# LOG_LEVEL = "DEBUG"
+LOG_LEVEL = "INFO"
 from datetime import datetime
-n = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
-LOG_FILE = f"./log/{n}_error.log"
+n = datetime.now().strftime('%m_%d_%H_%M_%S')
+# LOG_FILE = f"./logs/{n}_error.log"
 
-RETRY_TIMES = 3
+RETRY_TIMES = 2
 RETRY_HTTP_CODES = [500, 502, 503, 504, 522, 524, 407, 408, 429, 520]
-HTTPERROR_ALLOWED_CODES = [301, 302, 403]
+HTTPERROR_ALLOWED_CODES = [302, 301, 403]    # 允许返回response到spider中处理
 
 # 图像存储
 # IMAGES_STORE = './images'
@@ -71,7 +97,7 @@ ROBOTSTXT_OBEY = False
 
 
 # Disable cookies (enabled by default)
-COOKIES_ENABLED = False
+# COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
 #TELNETCONSOLE_ENABLED = False
@@ -87,6 +113,7 @@ SPIDER_MIDDLEWARES = {
 DOWNLOADER_MIDDLEWARES = {
         'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
         'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 100,
+        # 'douban_book.middlewares.RandomUserAgentMiddleware': 100,
         'douban_book.middlewares.ProxyDownloaderMiddleware': 101,
         'douban_book.middlewares.DoubanBookDownloaderMiddleware': 544,
         'scrapy.spidermiddlewares.depth.DepthMiddleware': 900,  # default已经设置

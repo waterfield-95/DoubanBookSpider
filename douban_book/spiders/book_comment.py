@@ -7,7 +7,7 @@
 import douban_book.database as db
 from douban_book.items import BookComment
 from scrapy import Request, Spider
-from douban_book.util import get_douban_id
+from douban_book.utils import get_numbers
 from lxml import etree
 
 cursor = db.connection.cursor()
@@ -21,8 +21,8 @@ class BookCommentSpider(Spider):
     book_urls = cursor.fetchall()
     start_urls = dict()
     for url in book_urls:
-        douban_id = get_douban_id(url[0])
-        start_urls[douban_id] = f'https://book.douban.com/subject/{douban_id}/comments'
+        douban_id = get_numbers(url[0])
+        start_urls[douban_id] = f'https://book.douban.com/subject/{douban_id}/comments/'
 
     def start_requests(self):
         for (key, url) in self.start_urls.items():
@@ -36,7 +36,7 @@ class BookCommentSpider(Spider):
         elif 302 == response.status or 301 == response.status:
             print("book.comment.response.302.url", response.url)
         else:
-            douban_id = get_douban_id(response.url)
+            douban_id = get_numbers(response.url)
 
             # 下一页
             next_regx = "//a[@data-page='next']/@href"

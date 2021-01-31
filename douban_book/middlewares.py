@@ -21,16 +21,6 @@ class ProxyDownloaderMiddleware:
         request.headers['Proxy-Authorization'] = basic_auth_header('t11120873803975', 'n3s831fx')  # 白名单认证可注释此行
 
 
-class MRProxyMiddleware(object):
-    # 蘑菇代理服务器
-    def process_request(self, request, spider):
-        proxyServer = "transfer.moguproxy.com:9001"
-        appkey = 'QUw3ZVZ1anRidjd1cm5nVjpvMkZudklMQkl0MExRaE1r'
-        proxyAuth = "Basic " + appkey
-        request.meta["proxy"] = proxyServer
-        request.headers["Authorization"] = proxyAuth
-
-
 class DoubanBookSpiderMiddleware:
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the spider middleware does not modify the

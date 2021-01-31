@@ -3,34 +3,259 @@ services:
   spider_1:
     image: comment_spider
     container_name: spider_1
-    command: scrapy crawl book_comment
+    environment:
+      - PYTHONUNBUFFERED=0
+    command: scrapy crawl book_review
     volumes:
       - .:/usr/src/spider/
 
   spider_2:
     image: comment_spider
     container_name: spider_2
-    command: scrapy crawl book_comment
+    environment:
+      - PYTHONUNBUFFERED=0
+    command: scrapy crawl book_review
     volumes:
       - .:/usr/src/spider/
 
   spider_3:
     image: comment_spider
     container_name: spider_3
-    command: scrapy crawl book_comment
+    command: scrapy crawl book_review
     volumes:
       - .:/usr/src/spider/
 
   spider_4:
     image: comment_spider
     container_name: spider_4
-    command: scrapy crawl book_comment
+    command: scrapy crawl book_review
     volumes:
       - .:/usr/src/spider/
 
   spider_5:
     image: comment_spider
     container_name: spider_5
-    command: scrapy crawl book_comment
+    command: scrapy crawl book_review
     volumes:
       - .:/usr/src/spider/
+#
+#  spider_6:
+#    image: comment_spider
+#    container_name: spider_6
+#    command: scrapy crawl book_review
+#    volumes:
+#      - .:/usr/src/spider/
+#
+#  spider_7:
+#    image: comment_spider
+#    container_name: spider_7
+#    command: scrapy crawl book_review
+#    volumes:
+#      - .:/usr/src/spider/
+#
+#  spider_8:
+#    image: comment_spider
+#    container_name: spider_8
+#    command: scrapy crawl book_review
+#    volumes:
+#      - .:/usr/src/spider/
+#
+#  spider_9:
+#    image: comment_spider
+#    container_name: spider_9
+#    command: scrapy crawl book_review
+#    volumes:
+#      - .:/usr/src/spider/
+#
+#  spider_10:
+#    image: comment_spider
+#    container_name: spider_10
+#    command: scrapy crawl book_review
+#    volumes:
+#      - .:/usr/src/spider/
+
+#  spider_11:
+#    image: comment_spider
+#    container_name: spider_11
+#    environment:
+#      - PYTHONUNBUFFERED=0
+#    command: scrapy crawl book_review
+#    volumes:
+#      - .:/usr/src/spider/
+#
+#  spider_12:
+#    image: comment_spider
+#    container_name: spider_12
+#    environment:
+#      - PYTHONUNBUFFERED=0
+#    command: scrapy crawl book_review
+#    volumes:
+#      - .:/usr/src/spider/
+#
+#  spider_13:
+#    image: comment_spider
+#    container_name: spider_13
+#    command: scrapy crawl book_review
+#    volumes:
+#      - .:/usr/src/spider/
+#
+#  spider_14:
+#    image: comment_spider
+#    container_name: spider_14
+#    command: scrapy crawl book_review
+#    volumes:
+#      - .:/usr/src/spider/
+#
+#  spider_15:
+#    image: comment_spider
+#    container_name: spider_15
+#    command: scrapy crawl book_review
+#    volumes:
+#      - .:/usr/src/spider/
+#
+#  spider_16:
+#    image: comment_spider
+#    container_name: spider_16
+#    command: scrapy crawl book_review
+#    volumes:
+#      - .:/usr/src/spider/
+#
+#  spider_17:
+#    image: comment_spider
+#    container_name: spider_17
+#    command: scrapy crawl book_review
+#    volumes:
+#      - .:/usr/src/spider/
+#
+#  spider_18:
+#    image: comment_spider
+#    container_name: spider_18
+#    command: scrapy crawl book_review
+#    volumes:
+#      - .:/usr/src/spider/
+#
+#  spider_19:
+#    image: comment_spider
+#    container_name: spider_19
+#    command: scrapy crawl book_review
+#    volumes:
+#      - .:/usr/src/spider/
+#
+#  spider_20:
+#    image: comment_spider
+#    container_name: spider_20
+#    command: scrapy crawl book_review
+#    volumes:
+#      - .:/usr/src/spider/
+
+#  spider_21:
+#    image: comment_spider
+#    container_name: spider_21
+#    environment:
+#      - PYTHONUNBUFFERED=0
+#    command: scrapy crawl book_review
+#    volumes:
+#      - .:/usr/src/spider/
+#
+#  spider_22:
+#    image: comment_spider
+#    container_name: spider_22
+#    environment:
+#      - PYTHONUNBUFFERED=0
+#    command: scrapy crawl book_review
+#    volumes:
+#      - .:/usr/src/spider/
+#
+#  spider_23:
+#    image: comment_spider
+#    container_name: spider_23
+#    command: scrapy crawl book_review
+#    volumes:
+#      - .:/usr/src/spider/
+#
+#  spider_24:
+#    image: comment_spider
+#    container_name: spider_24
+#    command: scrapy crawl book_review
+#    volumes:
+#      - .:/usr/src/spider/
+#
+#  spider_25:
+#    image: comment_spider
+#    container_name: spider_25
+#    command: scrapy crawl book_review
+#    volumes:
+#      - .:/usr/src/spider/
+#
+#  spider_26:
+#    image: comment_spider
+#    container_name: spider_26
+#    command: scrapy crawl book_review
+#    volumes:
+#      - .:/usr/src/spider/
+#
+#  spider_27:
+#    image: comment_spider
+#    container_name: spider_27
+#    command: scrapy crawl book_review
+#    volumes:
+#      - .:/usr/src/spider/
+#
+#  spider_28:
+#    image: comment_spider
+#    container_name: spider_28
+#    command: scrapy crawl book_review
+#    volumes:
+#      - .:/usr/src/spider/
+#
+#  spider_29:
+#    image: comment_spider
+#    container_name: spider_29
+#    command: scrapy crawl book_review
+#    volumes:
+#      - .:/usr/src/spider/
+#
+#  spider_30:
+#    image: comment_spider
+#    container_name: spider_30
+#    command: scrapy crawl book_review
+#    volumes:
+#      - .:/usr/src/spider/
+
+
+###################################################
+
+#  spider_1:
+#    image: comment_spider
+#    container_name: spider_1
+#    command: scrapy crawl book_comment
+#    volumes:
+#      - .:/usr/src/spider/
+#
+#  spider_2:
+#    image: comment_spider
+#    container_name: spider_2
+#    command: scrapy crawl book_comment
+#    volumes:
+#      - .:/usr/src/spider/
+#
+#  spider_3:
+#    image: comment_spider
+#    container_name: spider_3
+#    command: scrapy crawl book_comment
+#    volumes:
+#      - .:/usr/src/spider/
+#
+##  spider_4:
+##    image: comment_spider
+##    container_name: spider_4
+##    command: scrapy crawl book_comment
+##    volumes:
+##      - .:/usr/src/spider/
+##
+##  spider_5:
+##    image: comment_spider
+##    container_name: spider_5
+##    command: scrapy crawl book_comment
+##    volumes:
+##      - .:/usr/src/spider/

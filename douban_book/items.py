@@ -41,12 +41,32 @@ class DoubanBookReview(scrapy.Item):
 class BookComment(Item):
     id = Field()
     book_id = Field()
-    douban_id = Field()
-    douban_comment_id = Field()
+
     douban_user_nickname = Field()
     douban_user_avatar = Field()
     douban_user_url = Field()
+
+    douban_id = Field()
+    douban_comment_id = Field()
     content = Field()
     votes = Field()
     rating = Field()
     comment_time = Field()
+
+
+class BookReview(Item):
+    id = Field()
+    book_id = Field()
+
+    douban_user_nickname = Field()
+    douban_user_avatar = Field()
+    douban_user_url = Field()
+
+    douban_id = Field()
+    douban_review_id = Field()
+    douban_review_title = Field()
+    rating = Field()
+    useful_count = Field()
+    useless_count = Field()
+    review_time = Field()
+    content = Field()
